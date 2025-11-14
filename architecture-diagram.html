@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudSecure Monitor - Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+        
+        .diagram-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .layer {
+            margin: 30px 0;
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .layer-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .layer-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.5em;
+        }
+        
+        .frontend {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .api {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .services {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .data {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        
+        .cloud {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+        
+        .components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .component {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .component:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .component-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .component-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .features {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            opacity: 0.9;
+        }
+        
+        .tech-stack {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .tech-stack h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .tech-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .tech-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        
+        .tech-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .diagram-container {
+                padding: 20px;
+            }
+            
+            .components {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🛡️ CloudSecure Monitor</h1>
+        <p>Plateforme de Surveillance et Sécurité Cloud</p>
+    </div>
+    
+    <div class="diagram-container">
+        <h2 style="text-align: center; color: #667eea; margin-bottom: 30px; font-size: 2em;">
+            Architecture du Système
+        </h2>
+        
+        <!-- Frontend Layer -->
+        <div class="layer frontend">
+            <div class="layer-title">
+                <div class="layer-icon">🖥️</div>
+                <span>Couche Présentation - Frontend</span>
+            </div>
+            <div class="components">
+                <div class="component">
+                    <div class="component-name">React Dashboard</div>
+                    <div class="component-desc">Interface utilisateur moderne</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Tailwind CSS</div>
+                    <div class="component-desc">Styling responsive</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Recharts</div>
+                    <div class="component-desc">Visualisations de données</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- API Layer -->
+        <div class="layer api">
+            <div class="layer-title">
+                <div class="layer-icon">🔌</div>
+                <span>Couche API - Gateway</span>
+            </div>
+            <div class="components">
+                <div class="component">
+                    <div class="component-name">REST API</div>
+                    <div class="component-desc">Endpoints RESTful</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Authentication</div>
+                    <div class="component-desc">Gestion des accès</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Rate Limiting</div>
+                    <div class="component-desc">Protection API</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Services Layer -->
+        <div class="layer services">
+            <div class="layer-title">
+                <div class="layer-icon">⚙️</div>
+                <span>Couche Services - Business Logic</span>
+            </div>
+            <div class="components">
+                <div class="component">
+                    <div class="component-name">Monitor Service</div>
+                    <div class="component-desc">Collecte de métriques</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Security Service</div>
+                    <div class="component-desc">Analyse de sécurité</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Alert Service</div>
+                    <div class="component-desc">Gestion des alertes</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Report Service</div>
+                    <div class="component-desc">Génération de rapports</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Data Layer -->
+        <div class="layer data">
+            <div class="layer-title">
+                <div class="layer-icon">💾</div>
+                <span>Couche Données - Storage</span>
+            </div>
+            <div class="components">
+                <div class="component">
+                    <div class="component-name">Metrics DB</div>
+                    <div class="component-desc">Données de monitoring</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Security DB</div>
+                    <div class="component-desc">Vulnérabilités</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Logs Storage</div>
+                    <div class="component-desc">Audit et historique</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="arrow">↓</div>
+        
+        <!-- Cloud Layer -->
+        <div class="layer cloud">
+            <div class="layer-title">
+                <div class="layer-icon">☁️</div>
+                <span>Infrastructure Cloud</span>
+            </div>
+            <div class="components">
+                <div class="component">
+                    <div class="component-name">Nutanix</div>
+                    <div class="component-desc">HCI Platform</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">VMware</div>
+                    <div class="component-desc">Virtualisation</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">OpenStack</div>
+                    <div class="component-desc">Cloud privé</div>
+                </div>
+                <div class="component">
+                    <div class="component-name">Proxmox</div>
+                    <div class="component-desc">Hyperviseur</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Monitoring Temps Réel</div>
+                <div class="feature-desc">Surveillance continue des ressources cloud</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">Analyse de Sécurité</div>
+                <div class="feature-desc">Détection des vulnérabilités et menaces</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚨</div>
+                <div class="feature-title">Alertes Intelligentes</div>
+                <div class="feature-desc">Notifications automatiques des incidents</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <div class="feature-title">Rapports Détaillés</div>
+                <div class="feature-desc">Génération de rapports de conformité</div>
+            </div>
+        </div>
+        
+        <!-- Tech Stack -->
+        <div class="tech-stack">
+            <h2>🛠️ Stack Technologique</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <strong>React 18</strong>
+                    <div>Framework UI</div>
+                </div>
+                <div class="tech-item">
+                    <strong>Tailwind CSS</strong>
+                    <div>Styling</div>
+                </div>
+                <div class="tech-item">
+                    <strong>Node.js</strong>
+                    <div>Backend Runtime</div>
+                </div>
+                <div class="tech-item">
+                    <strong>Express.js</strong>
+                    <div>API Framework</div>
+                </div>
+                <div class="tech-item">
+                    <strong>Recharts</strong>
+                    <div>Visualisations</div>
+                </div>
+                <div class="tech-item">
+                    <strong>Docker</strong>
+                    <div>Conteneurisation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; color: white; margin-top: 40px; opacity: 0.9;">
+        <p style="font-size: 1.2em; margin-bottom: 10px;">
+            👨‍💻 Créé par <strong>Ali Ait El Mahjoub</strong>
+        </p>
+        <p>Étudiant Ingénieur - Systèmes, Réseaux, Sécurité & Cloud Infrastructure</p>
+        <p style="margin-top: 10px;">🔐 Spécialisation : Cyber Sécurité</p>
+    </div>
+</body>
+</html>
